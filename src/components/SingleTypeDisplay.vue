@@ -37,10 +37,10 @@ export default {
 </script>
 
 <template>
-<div class="row bg-secondary rounded mt-1">
-    <input class="col-1 bg-secondary" v-model="edit_type.type_name" v-on:change="update_changed" />
-    <input class="col bg-secondary" v-model="edit_type.type_unit" v-on:change="update_changed"/>
-    <button class="col-1 bg-primary text-end" v-if="changed" v-on:click="update_type()">submit </button>
+<div class="row rounded mt-1 mb-0 p-0 ">
+    <input class="col bg-secondary rounded me-1" v-model="edit_type.type_name" v-on:change="update_changed" />
+    <input class="col bg-secondary rounded" v-model="edit_type.type_unit" v-on:change="update_changed"/>
+    <button class="col bg-primary text-end rounded mb-1" v-if="changed" v-on:click="update_type()">submit </button>
 </div>
 
 </template>

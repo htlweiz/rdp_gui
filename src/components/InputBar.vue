@@ -28,8 +28,8 @@ export default {
 </script>
 
 <template>
-    <div class="row">
-      <input witdh="100%"
+    <div class="row bg-primary mb-2">
+      <input class="bg-primary" witdh="100%"
         id="search_string"
         placeholder="search"
         :onkeydown="search_update"
