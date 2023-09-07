@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// import { RouterLink, RouterView } from 'vue-router'
-// import HelloWorld from './components/HelloWorld.vue'
 import axios from 'axios'
 import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
@@ -10,25 +8,19 @@ import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
 </script>
 
-<template>
-  <div class="container">
-    <h1 class="row">RDP</h1>
-    <InputBar @search="update_search" />
-    <TypesDisplay :value_types="value_types" @update_type="get_types"/>
-    <ValuesDisplay :values="values" :value_types="value_types" />
-  </div>
-</template>
-
 <script lang="ts">
 export default {
   data() {
     return {
       values: new Array<Value>(),
-      value_types: new Array<ValueType>()
+      value_types: new Array<ValueType>(),
+      filter_start : '',
+      filter_end : '',
+      filter_type : ''
     }
   },
   mounted() {
-    this.get_types() 
+    this.get_types()
     this.get_values().then((data) => {
       this.values = data
     })
@@ -45,10 +37,10 @@ export default {
       return return_value
     },
     update_search(args: string[]) {
-      var type: string = ''
-      var start: string = ''
-      var end: string = ''
       console.log('New search arguemnts', args)
+      this.filter_end=''
+      this.filter_start=''
+      this.filter_type=''
       for (var i = 0; i < args.length; i++) {
         const command = args[i]
         console.log('handling command', command)
@@ -57,20 +49,20 @@ export default {
           const key = command_and_args[0]
           const value = command_and_args[1]
           if (key == 'type') {
-            type = this.getTypeId(value)
-            console.log('Update typeid', type)
+            this.filter_type = this.getTypeId(value)
+            console.log('Update typeid', this.filter_type)
             continue
           } else if (key == 'start') {
-            start = value
+            this.filter_start = value
             continue
           } else if (key == 'end') {
-            end = value
+            this.filter_end = value
             continue
           }
         }
         console.log('Ignoring command', command)
       }
-      this.get_values(type, start, end).then((result) => {
+      this.get_values().then((result) => {
         this.values = result
       })
     },
@@ -78,19 +70,24 @@ export default {
       axios
         .get('/api/type/')
         .then((result) => {
-          this.value_types=result.data
+          this.value_types = result.data
         })
         .catch((error) => {
           console.error(error)
         })
     },
-    get_values(type_id = '', start = '', end = '') {
+    get_values() {
       const promise = new Promise<Value[]>((accept, reject) => {
         const url = '/api/value/'
-        const params = {
-          'type_id': type_id,
-          'start': start,
-          'end' : end
+        var params : { [key: string]: string } = {}
+        if (this.filter_type != '') {
+          params['type_id'] = this.filter_type
+        }
+        if (this.filter_end != '') {
+          params['end'] = this.filter_end
+        }
+        if (this.filter_start != '') {
+          params['start']=this.filter_start
         }
         console.log('Trying to get url', url)
         axios
@@ -109,3 +106,12 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div class="container p-1">
+    <h1 class="row">RDP</h1>
+    <InputBar @search="update_search" />
+    <TypesDisplay :value_types="value_types" @update_type="get_types" />
+    <ValuesDisplay :values="values" :value_types="value_types" />
+  </div>
+</template>

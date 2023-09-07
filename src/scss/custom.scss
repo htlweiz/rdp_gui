@@ -1,11 +1,11 @@
 $theme-colors: (
   "primary": #CEC1C4,
   "secondary": lightgray,
-  "danger": #ff4136
+  "danger": #ff4136,
 );
 
 @import 'bootstrap/scss/bootstrap.scss';
 
-#app {
+body {
     background-color: #EEE1C6;
 }
