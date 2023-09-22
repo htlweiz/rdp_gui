@@ -2,6 +2,7 @@
 
 import { sleep } from '@/scripts/sleep'
 
+
 class SearchCommand {
     private search_string: string;  //Private member to store the search string
     private typing: boolean;  //Private member to track whether typing is in progress
