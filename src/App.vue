@@ -3,6 +3,7 @@ import axios from 'axios'
 import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
 import TypesDisplay from './components/TypesDisplay.vue'
+import CommandFactory from './commands/command.factory'
 
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
@@ -14,9 +15,9 @@ export default {
     return {
       values: new Array<Value>(),
       value_types: new Array<ValueType>(),
-      filter_start : '',
-      filter_end : '',
-      filter_type : ''
+      filter_start: '',
+      filter_end: '',
+      filter_type: ''
     }
   },
   mounted() {
@@ -38,16 +39,18 @@ export default {
     },
     update_search(args: string[]) {
       console.log('New search arguemnts', args)
-      this.filter_end=''
-      this.filter_start=''
-      this.filter_type=''
+      this.filter_end = ''
+      this.filter_start = ''
+      this.filter_type = ''
+      const commandFactory = new CommandFactory()
       for (var i = 0; i < args.length; i++) {
-        const command = args[i]
-        console.log('handling command', command)
+        console.log('handling command', args[i])
         const command_and_args = args[i].split(':')
         if (command_and_args.length == 2) {
           const key = command_and_args[0]
           const value = command_and_args[1]
+          const command = commandFactory.getCommand(key)
+          command.execute(value)
           if (key == 'type') {
             this.filter_type = this.getTypeId(value)
             console.log('Update typeid', this.filter_type)
@@ -60,7 +63,7 @@ export default {
             continue
           }
         }
-        console.log('Ignoring command', command)
+        console.log('Ignoring command', args[i])
       }
       this.get_values().then((result) => {
         this.values = result
@@ -79,7 +82,7 @@ export default {
     get_values() {
       const promise = new Promise<Value[]>((accept, reject) => {
         const url = '/api/value/'
-        var params : { [key: string]: string } = {}
+        var params: { [key: string]: string } = {}
         if (this.filter_type != '') {
           params['type_id'] = this.filter_type
         }
@@ -87,7 +90,7 @@ export default {
           params['end'] = this.filter_end
         }
         if (this.filter_start != '') {
-          params['start']=this.filter_start
+          params['start'] = this.filter_start
         }
         console.log('Trying to get url', url)
         axios
