@@ -38,7 +38,6 @@ export default {
           const key = command_and_args[0]
           const value = command_and_args[1]
           const command = this.commandFactory.getCommand(key)
-          console.log(key)
           if (command) {
             command.execute(value)
             continue
@@ -46,7 +45,6 @@ export default {
         }
         console.log('Ignoring command', args[i])
       }
-      console.log(this.params)
       this.valueStore.updateValues(this.params)
     }
   }
