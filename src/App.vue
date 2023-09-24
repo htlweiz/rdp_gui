@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
@@ -6,105 +7,116 @@ import TypesDisplay from './components/TypesDisplay.vue'
 
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
-</script>
 
-<script lang="ts">
-export default {
-  data() {
-    return {
-      values: new Array<Value>(),
-      value_types: new Array<ValueType>(),
-      filter_start : '',
-      filter_end : '',
-      filter_type : ''
-    }
-  },
-  mounted() {
-    this.get_types()
-    this.get_values().then((data) => {
-      this.values = data
-    })
-  },
-  methods: {
-    getTypeId(type_name: string) {
-      var return_value = ''
-      for (var i = 0; i < this.value_types.length; i++) {
-        if (this.value_types[i].type_name.toUpperCase() == type_name.toUpperCase()) {
-          return_value = '' + this.value_types[i].id
-          console.log('Found matching type', this.value_types[i])
-        }
-      }
-      return return_value
-    },
-    update_search(args: string[]) {
-      console.log('New search arguemnts', args)
-      this.filter_end=''
-      this.filter_start=''
-      this.filter_type=''
-      for (var i = 0; i < args.length; i++) {
-        const command = args[i]
-        console.log('handling command', command)
-        const command_and_args = args[i].split(':')
-        if (command_and_args.length == 2) {
-          const key = command_and_args[0]
-          const value = command_and_args[1]
-          if (key == 'type') {
-            this.filter_type = this.getTypeId(value)
-            console.log('Update typeid', this.filter_type)
-            continue
-          } else if (key == 'start') {
-            this.filter_start = value
-            continue
-          } else if (key == 'end') {
-            this.filter_end = value
-            continue
-          }
-        }
-        console.log('Ignoring command', command)
-      }
-      this.get_values().then((result) => {
-        this.values = result
-      })
-    },
-    get_types() {
-      axios
-        .get('/api/type/')
-        .then((result) => {
-          this.value_types = result.data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    get_values() {
-      const promise = new Promise<Value[]>((accept, reject) => {
-        const url = '/api/value/'
-        var params : { [key: string]: string } = {}
-        if (this.filter_type != '') {
-          params['type_id'] = this.filter_type
-        }
-        if (this.filter_end != '') {
-          params['end'] = this.filter_end
-        }
-        if (this.filter_start != '') {
-          params['start']=this.filter_start
-        }
-        console.log('Trying to get url', url)
-        axios
-          .get(url, { params: params })
-          .then((result) => {
-            // console.log('Got values: ', result.data)
-            accept(result.data)
-          })
-          .catch((error) => {
-            console.error(error)
-            reject(error)
-          })
-      })
-      return promise
-    }
+const values = ref(new Array<Value>())
+const value_types = ref(new Array<ValueType>())
+const filter_start = ref('')
+const filter_end = ref('')
+const filter_type = ref('')
+
+interface Command {
+  execute(): void
+}
+
+class GetValueType implements Command {
+  constructor(
+    private context: any,
+    private value: string
+  ) {}
+  execute() {
+    this.context.filter_type.value = this.context.getTypeId(this.value)
   }
 }
+
+class GetStart implements Command {
+  constructor(
+    private context: any,
+    private value: string
+  ) {}
+  execute() {
+    this.context.filter_start.value = this.value
+  }
+}
+
+class GetEnd implements Command {
+  constructor(
+    private context: any,
+    private value: string
+  ) {}
+  execute() {
+    this.context.filter_end.value = this.value
+  }
+}
+
+const getTypeId = (type_name: string) => {
+  let return_value = ''
+  for (const valueType of value_types.value) {
+    if (valueType.type_name.toUpperCase() === type_name.toUpperCase()) {
+      return_value = '' + valueType.id
+      console.log('Found matching type', valueType)
+    }
+  }
+  return return_value
+}
+
+const update_search = (args: string[]) => {
+  const context = {
+    filter_type,
+    filter_start,
+    filter_end,
+    getTypeId
+  }
+
+  for (const commandStr of args) {
+    const [key, value] = commandStr.split(':')
+    let command: Command | null = null
+
+    if (key && value) {
+      if (key === 'type') {
+        command = new GetValueType(context, value)
+      } else if (key === 'start') {
+        command = new GetStart(context, value)
+      } else if (key === 'end') {
+        command = new GetEnd(context, value)
+      }
+
+      if (command) {
+        command.execute()
+      }
+    }
+  }
+  get_values()
+}
+
+const get_types = () => {
+  axios
+    .get('/api/type/')
+    .then((result) => {
+      value_types.value = result.data
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+const get_values = async () => {
+  const params: { [key: string]: string } = {}
+  if (filter_type.value) params['type_id'] = filter_type.value
+  if (filter_end.value) params['end'] = filter_end.value
+  if (filter_start.value) params['start'] = filter_start.value
+
+  try {
+    const result = await axios.get('/api/value/', { params })
+    values.value = result.data
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+onMounted(() => {
+  get_types()
+  get_values()
+})
 </script>
 
 <template>
