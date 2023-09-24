@@ -1,13 +1,10 @@
-import type Command from './command'
+import { Command } from './command'
+import { useValueTypeStore } from '@/stores/value-type.store'
 
-class TypeFilterCommand implements Command {
-  execute(arg: unknown): void {
-    if (typeof arg != 'string') {
-      throw new TypeError()
-    }
+export class TypeFilterCommand extends Command {
+  private valueTypeStore = useValueTypeStore()
 
-    console.log(arg)
+  execute(arg: string): void {
+    this.params['type_id'] = this.valueTypeStore.getTypeId(arg)
   }
 }
-
-export default TypeFilterCommand

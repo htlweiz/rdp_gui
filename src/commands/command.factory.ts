@@ -1,13 +1,18 @@
-import type Command from './command'
-import TypeFilterCommand from './type-filter.command'
+import type { UrlParams } from '@/types/url-paras.type'
+import { Command } from './command'
+import { TypeFilterCommand } from './type-filter.command'
 
-class CommandFactory {
-  private static readonly register: Record<string, new () => Command> = { type: TypeFilterCommand }
+export class CommandFactory {
+  private static readonly registeredCommands: Record<string, new (params: UrlParams) => Command> = {
+    type: TypeFilterCommand
+  }
 
-  public getCommand(command: string) {
-    const cmd = CommandFactory.register[command]
-    return new cmd()
+  constructor(private params: UrlParams) {}
+
+  public getCommand(command: string): Command | undefined {
+    const cmd = CommandFactory.registeredCommands[command]
+    if (cmd) {
+      return new cmd(this.params)
+    }
   }
 }
-
-export default CommandFactory
