@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import axios from 'axios'
-import InputBar from './components/InputBar.vue'
-import ValuesDisplay from './components/ValuesDisplay.vue'
-import TypesDisplay from './components/TypesDisplay.vue'
 
-import { ValueType } from './scripts/value_type'
-import { Value } from './scripts/value'
+import axios from 'axios';  
+import InputBar from './components/InputBar.vue';  
+import ValuesDisplay from './components/ValuesDisplay.vue';  
+import TypesDisplay from './components/TypesDisplay.vue';  
+
+import { ValueType } from './scripts/value_type'; 
+import { Value } from './scripts/value';  
 </script>
 
 <script lang="ts">
+
 // Command interface
 interface Command {
   execute(value: string): void;
@@ -55,36 +57,37 @@ class EndFilterCommand implements Command {
 }
 
 export default {
+  // Data of the component
   data() {
     return {
-      values: new Array<Value>(),
-      value_types: new Array<ValueType>(),
-      filter_start: '',
-      filter_end: '',
-      filter_type: ''
-    }
+      values: new Array<Value>(),  // Array for values
+      value_types: new Array<ValueType>(),  // Array for value types
+      filter_start: '',  // Start filter
+      filter_end: '',  // End filter
+      filter_type: ''  // Type filter
+    };
   },
   mounted() {
-    this.get_types()
+    this.get_types();  
     this.get_values().then((data) => {
-      this.values = data
-    })
+      this.values = data;  
+    });
   },
   methods: {
     getTypeId(type_name: string) {
-      var return_value = ''
+      var return_value = '';
       for (var i = 0; i < this.value_types.length; i++) {
         if (this.value_types[i].type_name.toUpperCase() == type_name.toUpperCase()) {
-          return_value = '' + this.value_types[i].id
-          console.log('Found matching type', this.value_types[i])
+          return_value = '' + this.value_types[i].id;
+          console.log('Found matching type', this.value_types[i]);
         }
       }
-      return return_value
+      return return_value;
     },
     update_search(args: string[]) {
       console.log('New search arguments', args);
 
-      // Clear filters
+      // Reset filters
       this.filter_end = '';
       this.filter_start = '';
       this.filter_type = '';
@@ -123,41 +126,43 @@ export default {
         this.values = result;
       });
     },
+    
     get_types() {
       axios
         .get('/api/type/')
         .then((result) => {
-          this.value_types = result.data
+          this.value_types = result.data;  
         })
         .catch((error) => {
-          console.error(error)
-        })
+          console.error(error);
+        });
     },
+   
     get_values() {
       const promise = new Promise<Value[]>((accept, reject) => {
-        const url = '/api/value/'
-        var params: { [key: string]: string } = {}
+        const url = '/api/value/';
+        var params: { [key: string]: string } = {};
         if (this.filter_type != '') {
-          params['type_id'] = this.filter_type
+          params['type_id'] = this.filter_type;
         }
         if (this.filter_end != '') {
-          params['end'] = this.filter_end
+          params['end'] = this.filter_end;
         }
         if (this.filter_start != '') {
-          params['start'] = this.filter_start
+          params['start'] = this.filter_start;
         }
-        console.log('Trying to get url', url)
+        console.log('Trying to get url', url);
         axios
           .get(url, { params: params })
           .then((result) => {
-            accept(result.data)
+            accept(result.data);
           })
           .catch((error) => {
-            console.error(error)
-            reject(error)
-          })
-      })
-      return promise
+            console.error(error);
+            reject(error);
+          });
+      });
+      return promise;
     }
   }
 }

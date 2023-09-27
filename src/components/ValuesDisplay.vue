@@ -8,21 +8,31 @@ export default {
   },
   emits: ['rename'],
   methods: {
+    getUTCDate(value: Value) {
+      const timestampInSeconds = value.time;
+      const timestampInMilliseconds = timestampInSeconds * 1000; // Calculate in ms
+      const utcDate = new Date(timestampInMilliseconds);
+      
+      // Adjust for local time 
+      const localDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "Europe/Berlin" }));
+      
+      return localDate.toUTCString();
+    },
     getTypeName(value: Value) {
-      for (var i = 0; i < this.value_types.length; i++) {
+      for (let i = 0; i < this.value_types.length; i++) {
         if (this.value_types[i].id == value.value_type_id) {
-          return this.value_types[i].type_name
+          return this.value_types[i].type_name;
         }
       }
-      return 'XXX'
+      return 'XXX';
     },
     getUnit(value: Value) {
-      for (var i = 0; i < this.value_types.length; i++) {
+      for (let i = 0; i < this.value_types.length; i++) {
         if (this.value_types[i].id == value.value_type_id) {
-          return this.value_types[i].type_unit
+          return this.value_types[i].type_unit;
         }
       }
-      return 'XXX'
+      return 'XXX';
     }
   }
 }
@@ -43,7 +53,7 @@ export default {
   </div>
   <div class="row bg-secondary rounded mt-1" v-for="value in values" :key="value">
     <div class="col-1">
-      {{ value.time }}
+      {{ getUTCDate(value) }}
     </div>
     <div class="col-1">
       {{ getTypeName(value) }}
