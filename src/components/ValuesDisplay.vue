@@ -23,23 +23,11 @@ export default {
         }
       }
       return 'XXX'
-    }
-  },
-  computed: {
-    adjustedValues() {
-      return this.values.map(value => {
-        const time = new Date(value.time);
-        // Round the minutes to the nearest half-hour interval
-        const minutes = time.getMinutes();
-        const roundedMinutes = Math.round(minutes / 30) * 30;
-        time.setMinutes(roundedMinutes);
-        time.setHours(time.getHours() + 2); // Add 2 hours to the time
-        const adjustedTime = time.toISOString().replace(/T/, ' ').replace(/\.\d+Z$/, '');
-        return {
-          ...value,
-          time: adjustedTime
-        };
-      });
+    },
+    // Funktion zur Umwandlung von UNIX-Zeit in UTC-Datum und Zeit
+    convertToUTC(value: Value) {
+      const utcDate = new Date(value.time * 1000); // Wert in Millisekunden umwandeln
+      return utcDate.toUTCString(); // In UTC-Zeit umwandeln und als Zeichenfolge zurückgeben
     }
   }
 }
@@ -53,14 +41,14 @@ export default {
       data-bs-placement="top"
       data-bs-title="Tooltip on top"
     >
-      time
+      time (UTC)
     </div>
     <div class="col-1">type</div>
     <div class="col">value</div>
   </div>
-  <div class="row bg-secondary rounded mt-1" v-for="value in adjustedValues" :key="value">
+  <div class="row bg-secondary rounded mt-1" v-for="value in values" :key="value">
     <div class="col-1">
-      {{ value.time }}
+      {{ convertToUTC(value) }}
     </div>
     <div class="col-1">
       {{ getTypeName(value) }}
