@@ -19,32 +19,23 @@ interface Command {
 }
 
 class GetValueType implements Command {
-  constructor(
-    private context: any,
-    private value: string
-  ) {}
+  constructor(private value: string) {}
   execute() {
-    this.context.filter_type.value = this.context.getTypeId(this.value)
+    filter_type.value = getTypeId(this.value)
   }
 }
 
 class GetStart implements Command {
-  constructor(
-    private context: any,
-    private value: string
-  ) {}
+  constructor(private value: string) {}
   execute() {
-    this.context.filter_start.value = this.value
+    filter_start.value = this.value
   }
 }
 
 class GetEnd implements Command {
-  constructor(
-    private context: any,
-    private value: string
-  ) {}
+  constructor(private value: string) {}
   execute() {
-    this.context.filter_end.value = this.value
+    filter_end.value = this.value
   }
 }
 
@@ -60,30 +51,22 @@ const getTypeId = (type_name: string) => {
 }
 
 const update_search = (args: string[]) => {
-  const context = {
-    filter_type,
-    filter_start,
-    filter_end,
-    getTypeId
-  }
-
   for (const commandStr of args) {
     const [key, value] = commandStr.split(':')
     let command: Command | null = null
 
-    if (key && value) {
-      if (key === 'type') {
-        command = new GetValueType(context, value)
-      } else if (key === 'start') {
-        command = new GetStart(context, value)
-      } else if (key === 'end') {
-        command = new GetEnd(context, value)
-      }
-
-      if (command) {
-        command.execute()
-      }
+    switch (key) {
+      case 'type':
+        command = new GetValueType(value)
+        break
+      case 'start':
+        command = new GetStart(value)
+        break
+      case 'end':
+        command = new GetEnd(value)
+        break
     }
+    command?.execute()
   }
   get_values()
 }

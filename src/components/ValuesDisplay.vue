@@ -23,6 +23,10 @@ export default {
         }
       }
       return 'XXX'
+    },
+    getCurrentTimeStamp(value: Value) {
+      const time = new Date(value.time * 1000).toUTCString()
+      return time
     }
   }
 }
@@ -42,9 +46,7 @@ export default {
     <div class="col">value</div>
   </div>
   <div class="row bg-secondary rounded mt-1" v-for="value in values" :key="value">
-    <div class="col-1">
-      {{ value.time }}
-    </div>
+    <div class="col-1">{{ getCurrentTimeStamp(value) }}</div>
     <div class="col-1">
       {{ getTypeName(value) }}
     </div>
