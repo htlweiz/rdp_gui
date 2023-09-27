@@ -1,70 +1,106 @@
 <script setup lang="ts">
-
 import axios from 'axios';  
 import InputBar from './components/InputBar.vue';  
 import ValuesDisplay from './components/ValuesDisplay.vue';  
 import TypesDisplay from './components/TypesDisplay.vue';  
-
 import { ValueType } from './scripts/value_type'; 
 import { Value } from './scripts/value';  
 </script>
 
 <script lang="ts">
 
-// Command interface
-interface Command {
-  execute(value: string): void;
-}
-
-// Command to handle 'type' filter
-class TypeFilterCommand implements Command {
-  private component: any;
+// Base Command class
+class Command {
+  component: any;
 
   constructor(component: any) {
     this.component = component;
   }
 
+  execute(value: string): void {
+    console.log('Default execute method. Value:', value);
+  }
+}
+
+// Command to filter by type
+class TypeFilterCommand extends Command {
   execute(value: string): void {
     this.component.filter_type = this.component.getTypeId(value);
     console.log('Update typeid', this.component.filter_type);
   }
 }
 
-// Command to handle 'start' filter
-class StartFilterCommand implements Command {
-  private component: any;
-
-  constructor(component: any) {
-    this.component = component;
-  }
-
+// Command to start filtering
+class StartFilterCommand extends Command {
   execute(value: string): void {
     this.component.filter_start = value;
   }
 }
 
-// Command to handle 'end' filter
-class EndFilterCommand implements Command {
-  private component: any;
-
-  constructor(component: any) {
-    this.component = component;
-  }
-
+// Command to end filtering
+class EndFilterCommand extends Command {
   execute(value: string): void {
     this.component.filter_end = value;
   }
 }
 
+// Command to create and execute a command
+class ExecuteCommand extends Command {
+  key: string;
+  arg: string;
+
+  constructor(component: any, key: string, arg: string) {
+    super(component);
+    this.key = key;
+    this.arg = arg;
+  }
+
+  execute(): void {
+    const CommandClass = Executor.commands[this.key];
+    if (CommandClass) {
+      const command = new CommandClass(this.component);
+      command.execute(this.arg);
+    } else {
+      console.log('Ignoring command', this.key, this.arg);
+    }
+  }
+}
+
+// Executor maps keys to respective command classes and registers them
+class Executor {
+  static type = TypeFilterCommand;
+  static start = StartFilterCommand;
+  static end = EndFilterCommand;
+
+  // Dictionary to store registered commands
+  static commands: { [key: string]: typeof Command } = {};
+
+  // Method to register a command
+  static register(key: string, klasse: typeof Command): void {
+    this.commands[key] = klasse;
+  }
+
+  // Method to execute a command based on key and arg
+  static execute(key: string, arg: string, component: any): void {
+    const ExecuteCommandClass = ExecuteCommand;
+    const executeCommand = new ExecuteCommandClass(component, key, arg);
+    executeCommand.execute();
+  }
+}
+
+// Register commands
+Executor.register('type', TypeFilterCommand);
+Executor.register('start', StartFilterCommand);
+Executor.register('end', EndFilterCommand);
+
 export default {
-  // Data of the component
   data() {
     return {
-      values: new Array<Value>(),  // Array for values
-      value_types: new Array<ValueType>(),  // Array for value types
-      filter_start: '',  // Start filter
-      filter_end: '',  // End filter
-      filter_type: ''  // Type filter
+      values: new Array<Value>(),
+      value_types: new Array<ValueType>(),
+      filter_start: '',
+      filter_end: '',
+      filter_type: ''
     };
   },
   mounted() {
@@ -84,10 +120,10 @@ export default {
       }
       return return_value;
     },
+
     update_search(args: string[]) {
       console.log('New search arguments', args);
 
-      // Reset filters
       this.filter_end = '';
       this.filter_start = '';
       this.filter_type = '';
@@ -98,25 +134,8 @@ export default {
           const key = command_and_args[0];
           const value = command_and_args[1];
 
-          switch (key) {
-            case 'type':
-              const typeCommand = new TypeFilterCommand(this);
-              typeCommand.execute(value);
-              break;
-
-            case 'start':
-              const startCommand = new StartFilterCommand(this);
-              startCommand.execute(value);
-              break;
-
-            case 'end':
-              const endCommand = new EndFilterCommand(this);
-              endCommand.execute(value);
-              break;
-
-            default:
-              console.log('Ignoring command', args[i]);
-          }
+          // Execute the command based on key and value
+          Executor.execute(key, value, this);
         } else {
           console.log('Ignoring command', args[i]);
         }
@@ -126,7 +145,7 @@ export default {
         this.values = result;
       });
     },
-    
+
     get_types() {
       axios
         .get('/api/type/')
@@ -137,7 +156,7 @@ export default {
           console.error(error);
         });
     },
-   
+
     get_values() {
       const promise = new Promise<Value[]>((accept, reject) => {
         const url = '/api/value/';
