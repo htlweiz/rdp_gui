@@ -23,6 +23,9 @@ export default {
         }
       }
       return 'XXX'
+    },
+    UnixToUTC(unixTime:number) {
+      return new Date(unixTime * 1000).toUTCString();
     }
   }
 }
@@ -43,7 +46,7 @@ export default {
   </div>
   <div class="row bg-secondary rounded mt-1" v-for="value in values" :key="value">
     <div class="col-1">
-      {{ value.time }}
+      {{ UnixToUTC(value.time) }}
     </div>
     <div class="col-1">
       {{ getTypeName(value) }}
