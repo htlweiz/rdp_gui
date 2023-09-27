@@ -27,12 +27,12 @@ export default {
             axios.put("/api/type/"+this.edit_type.id+"/",this.edit_type)
                 .then((result) => {
                     console.log(result)
-                    this.$emit("update_type")
+                    this.$emit("update_device")
                 })
 
         }
     },
-    emits: ["update_type"]
+    emits: ["update_device"]
 }
 </script>
 

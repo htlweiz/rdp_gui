@@ -3,12 +3,14 @@ import { Command } from './command'
 import { TypeFilterCommand } from './type-filter.command'
 import { StartFilterCommand } from './start-filter.command'
 import { EndFilterCommand } from './end-filter.command'
+import { DeviceFilterCommand } from './device-filter.command'
 
 export class CommandFactory {
   private static readonly registeredCommands: Record<string, new (params: UrlParams) => Command> = {
     type: TypeFilterCommand,
     start: StartFilterCommand,
-    end: EndFilterCommand
+    end: EndFilterCommand,
+    device: DeviceFilterCommand
   }
 
   constructor(private params: UrlParams) {}

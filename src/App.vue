@@ -2,12 +2,14 @@
 import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
 import TypesDisplay from './components/TypesDisplay.vue'
+import DeviceDisplayVue from './components/DeviceDisplay.vue'
 import { CommandFactory } from './commands/command.factory'
 
 import { useValueStore } from './stores/value.store'
 import { useValueTypeStore } from './stores/value-type.store'
 
 import type { UrlParams } from './types/url-paras.type'
+import { useDeviceStore } from './stores/device.store'
 </script>
 
 <script lang="ts">
@@ -15,18 +17,21 @@ export default {
   data() {
     const valueStore = useValueStore()
     const valueTypeStore = useValueTypeStore()
+    const deviceStore = useDeviceStore()
     const params: UrlParams = {}
     const commandFactory = new CommandFactory(params)
     return {
       params,
       commandFactory,
       valueStore,
-      valueTypeStore
+      valueTypeStore,
+      deviceStore
     }
   },
   mounted() {
     this.valueTypeStore.updateValueTypes()
     this.valueStore.updateValues()
+    this.deviceStore.updateDevices()
   },
   methods: {
     update_search(args: string[]) {
@@ -59,6 +64,7 @@ export default {
       :value_types="valueTypeStore.valueTypes"
       @update_type="valueTypeStore.updateValueTypes"
     />
+    <DeviceDisplayVue :devices="deviceStore.devices" @update_device="deviceStore.updateDevices"/>
     <ValuesDisplay :values="valueStore.values" :value_types="valueTypeStore.valueTypes" />
   </div>
 </template>
