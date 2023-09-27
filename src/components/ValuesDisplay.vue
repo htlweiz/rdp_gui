@@ -26,8 +26,8 @@ export default {
     },
     formatTime(timestamp) {
       const date = new Date(timestamp * 1000); // Convert timestamp to milliseconds
-      const options = { timeZone: 'Europe/Bucharest', hour12: false };
-      return date.toLocaleString('en-US', options); // Format the date as a string in GMT+2
+      const options = { timeZone: 'UTC', hour12: false };
+      return date.toLocaleString('en-US', options); // Format the date as a string in UTC
     }
   }
 }
