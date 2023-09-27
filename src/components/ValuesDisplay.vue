@@ -24,6 +24,23 @@ export default {
       }
       return 'XXX'
     }
+  },
+  computed: {
+    adjustedValues() {
+      return this.values.map(value => {
+        const time = new Date(value.time);
+        // Round the minutes to the nearest half-hour interval
+        const minutes = time.getMinutes();
+        const roundedMinutes = Math.round(minutes / 30) * 30;
+        time.setMinutes(roundedMinutes);
+        time.setHours(time.getHours() + 2); // Add 2 hours to the time
+        const adjustedTime = time.toISOString().replace(/T/, ' ').replace(/\.\d+Z$/, '');
+        return {
+          ...value,
+          time: adjustedTime
+        };
+      });
+    }
   }
 }
 </script>
@@ -41,7 +58,7 @@ export default {
     <div class="col-1">type</div>
     <div class="col">value</div>
   </div>
-  <div class="row bg-secondary rounded mt-1" v-for="value in values" :key="value">
+  <div class="row bg-secondary rounded mt-1" v-for="value in adjustedValues" :key="value">
     <div class="col-1">
       {{ value.time }}
     </div>
