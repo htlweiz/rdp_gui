@@ -5,6 +5,9 @@ export class TypeFilterCommand extends Command {
   private valueTypeStore = useValueTypeStore()
 
   execute(arg: string): void {
-    this.params['type_id'] = this.valueTypeStore.getTypeId(arg)
+    const type = this.valueTypeStore.getTypeId(arg)
+    if (type) {
+      this.params['type_id'] = type
+    }
   }
 }

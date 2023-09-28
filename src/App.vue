@@ -65,6 +65,6 @@ export default {
       @update_type="valueTypeStore.updateValueTypes"
     />
     <DeviceDisplayVue :devices="deviceStore.devices" @update_device="deviceStore.updateDevices"/>
-    <ValuesDisplay :values="valueStore.values" :value_types="valueTypeStore.valueTypes" />
+    <ValuesDisplay :values="valueStore.values" :value_types="valueTypeStore.valueTypes" :devices="deviceStore.devices" />
   </div>
 </template>
