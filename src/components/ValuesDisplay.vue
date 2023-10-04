@@ -24,7 +24,7 @@ export default {
       }
       return 'XXX'
     },
-    formatTime(timestamp) {
+    formatTime(timestamp:any) {
       const date = new Date(timestamp * 1000); // Convert timestamp to milliseconds
       const options = { timeZone: 'UTC', hour12: false };
       return date.toLocaleString('en-US', options); // Format the date as a string in UTC
