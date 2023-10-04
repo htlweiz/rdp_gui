@@ -29,6 +29,7 @@ export default {
 
 <template>
     <div class="row bg-primary mb-2">
+        <label class="bg-primary" witdh="100%" for="filter">Search for Something: </label>
       <input class="bg-primary" witdh="100%"
         id="search_string"
         placeholder="search"
@@ -36,3 +37,4 @@ export default {
         v-model="search_string"/>
     </div>
 </template>
+
