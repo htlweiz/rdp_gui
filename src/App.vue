@@ -3,7 +3,7 @@ import axios from 'axios'
 import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
 import TypesDisplay from './components/TypesDisplay.vue'
-
+import filterdropdown from './components/filterdropdown.vue'
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
 </script>
@@ -14,11 +14,13 @@ export default {
     return {
       values: new Array<Value>(),
       value_types: new Array<ValueType>(),
-      filter_start : '',
-      filter_end : '',
-      filter_type : ''
+      filter_start: '',
+      filter_end: '',
+      filter_type: '', // <--- The missing comma
+      filter: ''
     }
   },
+
   mounted() {
     this.get_types()
     this.get_values().then((data) => {
@@ -80,6 +82,9 @@ export default {
       const promise = new Promise<Value[]>((accept, reject) => {
         const url = '/api/value/'
         var params : { [key: string]: string } = {}
+        if (this.filter !== '') {
+          params['type_id'] = this.filter;
+        }
         if (this.filter_type != '') {
           params['type_id'] = this.filter_type
         }
@@ -102,6 +107,12 @@ export default {
           })
       })
       return promise
+    },
+    updateFilter(selectedType) {
+      this.filter = selectedType;
+      this.get_values().then((result) => {
+        this.values = result;
+      });
     }
   }
 }
@@ -112,6 +123,7 @@ export default {
     <h1 class="row">RDP</h1>
     <InputBar @search="update_search" />
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
+    <filterdropdown :types="value_types" @filter="updateFilter" />
     <ValuesDisplay :values="values" :value_types="value_types" />
   </div>
 </template>
