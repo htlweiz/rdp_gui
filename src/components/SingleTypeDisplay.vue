@@ -26,11 +26,11 @@ export default {
     update_type() {
       axios.put('/api/type/' + this.edit_type.id + '/', this.edit_type).then((result) => {
         console.log(result)
-        this.$emit('update_device')
+        this.$emit('update_type')
       })
     }
   },
-  emits: ['update_device']
+  emits: ['update_type']
 }
 </script>
 

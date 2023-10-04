@@ -13,7 +13,7 @@ export default {
         }
     },
     components: { SingleTypeDisplay },
-    emits: ['update_device']
+    emits: ['update_type']
 }
 </script>
 
@@ -26,6 +26,6 @@ export default {
     </span>
   </div>
   <span v-if="!editor_hidden">
-    <SingleTypeDisplay :type_prop="value_type" v-for="value_type in value_types" :key="value_type" @update_type="$emit('update_device')"/>
+    <SingleTypeDisplay :type_prop="value_type" v-for="value_type in value_types" :key="value_type" @update_type="$emit('update_type')"/>
   </span>
 </template>

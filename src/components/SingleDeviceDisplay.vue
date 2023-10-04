@@ -26,7 +26,7 @@ export default {
     update_device() {
       console.log('asd', this.editDevice)
       axios.put('/api/device/' + this.editDevice.id + '/', this.editDevice).then((result) => {
-        console.log(result)
+        console.log("asdasd")
         this.$emit('update_device')
       })
     }
