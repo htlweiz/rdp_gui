@@ -1,3 +1,18 @@
+<template>
+  <div class="container p-1">
+    <h1 class="row">RDP</h1>
+    <button @click="toggleFiltersVisibility">{{ showFilters ? 'Hide Filters' : 'Show Filters' }}</button>
+    <div v-if="showFilters">
+      <FilterDropdown :types="value_types" @filter="updateFilter" />
+      <SortDropdown @sort="updateSort" />
+      <DatePicker @filter="updateDateFilter" />
+    </div>
+    <InputBar @search="update_search" />
+    <TypesDisplay :value_types="value_types" @update_type="get_types" />
+    <ValuesDisplay :values="values" :value_types="value_types" />
+  </div>
+</template>
+
 <script setup lang="ts">
 import axios from 'axios'
 import InputBar from './components/InputBar.vue'
@@ -8,7 +23,16 @@ import SortDropdown from './components/SortDropdown.vue'
 import DatePicker from './components/DatePicker.vue'
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
+import { ref } from 'vue'
+
+const showFilters = ref(false); // Initialize showFilters as a reactive variable
+
+const toggleFiltersVisibility = () => {
+  showFilters.value = !showFilters.value;
+};
 </script>
+
+
 
 <script lang="ts">
 export default {
@@ -32,6 +56,9 @@ export default {
     });
   },
   methods: {
+    toggleFiltersVisibility() {
+      showFilters.value = !showFilters.value;
+    },
     getTypeId(type_name: string) {
       var return_value = ''
       for (var i = 0; i < this.value_types.length; i++) {
@@ -43,7 +70,7 @@ export default {
       return return_value
     },
     update_search(args: string[]) {
-      console.log('New search arguemnts', args)
+      console.log('New search arguments', args)
       this.filter_end=''
       this.filter_start=''
       this.filter_type=''
@@ -103,7 +130,7 @@ export default {
         if (this.filter_start != '') {
           params['start'] = this.filter_start;
         }
-        console.log('Trying to get url', url);
+        console.log('Trying to get URL', url);
         axios
           .get(url, { params: params })
           .then((result) => {
@@ -144,16 +171,3 @@ export default {
   }
 }
 </script>
-
-<template>
-  <div class="container p-1">
-    <h1 class="row">RDP</h1>
-    <FilterDropdown :types="value_types" @filter="updateFilter" />
-    <SortDropdown @sort="updateSort" />
-    <DatePicker @filter="updateDateFilter" />
-    <InputBar @search="update_search" />
-    <TypesDisplay :value_types="value_types" @update_type="get_types" />
-    <ValuesDisplay :values="values" :value_types="value_types" />
-  </div>
-</template>
-
