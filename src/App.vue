@@ -25,12 +25,13 @@ import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
 import { ref } from 'vue'
 
-const showFilters = ref(false); // Initialize showFilters as a reactive variable
+const showFilters = ref(false); // Initialize showFilters as initially false
 
 const toggleFiltersVisibility = () => {
   showFilters.value = !showFilters.value;
 };
 </script>
+
 
 
 
@@ -44,7 +45,7 @@ export default {
       filter_end: '',
       filter_type: '', // <--- The missing comma
       filter: '',
-      sortOrder: 'asc' // 'asc' für aufsteigend, 'desc' für absteigend
+      sortOrder: '' // 'asc' für aufsteigend, 'desc' für absteigend
     }
   },
 
