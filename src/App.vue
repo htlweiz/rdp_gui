@@ -150,8 +150,8 @@ export default {
     <h1 class="row">RDP</h1>
     <FilterDropdown :types="value_types" @filter="updateFilter" />
     <SortDropdown @sort="updateSort" />
-    <InputBar @search="update_search" />
     <DatePicker @filter="updateDateFilter" />
+    <InputBar @search="update_search" />
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
     <ValuesDisplay :values="values" :value_types="value_types" />
   </div>
