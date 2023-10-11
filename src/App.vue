@@ -18,6 +18,31 @@ interface Command {
   execute(): void
 }
 
+class CommandFactory {
+  static buildCommandExecutor(): CommandExecutor {
+    const commandMap = {
+      type: GetValueType,
+      start: GetStart,
+      end: GetEnd
+    }
+    return new CommandExecutor(commandMap)
+  }
+}
+
+class CommandExecutor {
+  commandMap: { [key: string]: new (value: string) => Command }
+
+  constructor(commandMap: {}) {
+    this.commandMap = commandMap
+  }
+
+  execute(key: string, value: string) {
+    const CommandClass = this.commandMap[key]
+    const command = new CommandClass(value)
+    command.execute()
+  }
+}
+
 class GetValueType implements Command {
   constructor(private value: string) {}
   execute() {
@@ -51,22 +76,10 @@ const getTypeId = (type_name: string) => {
 }
 
 const update_search = (args: string[]) => {
+  const commandExecutor = CommandFactory.buildCommandExecutor()
   for (const commandStr of args) {
     const [key, value] = commandStr.split(':')
-    let command: Command | null = null
-
-    switch (key) {
-      case 'type':
-        command = new GetValueType(value)
-        break
-      case 'start':
-        command = new GetStart(value)
-        break
-      case 'end':
-        command = new GetEnd(value)
-        break
-    }
-    command?.execute()
+    commandExecutor.execute(key, value)
   }
   get_values()
 }
