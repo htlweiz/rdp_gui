@@ -4,6 +4,7 @@ import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
 import TypesDisplay from './components/TypesDisplay.vue'
 import FilterDropdown from './components/FilterDropdown.vue'
+import SortDropdown from './components/SortDropdown.vue'
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
 </script>
@@ -17,15 +18,17 @@ export default {
       filter_start: '',
       filter_end: '',
       filter_type: '', // <--- The missing comma
-      filter: ''
+      filter: '',
+      sortOrder: 'asc' // 'asc' für aufsteigend, 'desc' für absteigend
     }
   },
 
   mounted() {
-    this.get_types()
+    this.get_types();
     this.get_values().then((data) => {
-      this.values = data
-    })
+      this.values = data;
+      this.sortValues(); // Sortiere die Werte nach dem Laden
+    });
   },
   methods: {
     getTypeId(type_name: string) {
@@ -85,6 +88,11 @@ export default {
         if (this.filter !== '') {
           params['type_id'] = this.filter;
         }
+        if (this.sortOrder === 'asc') {
+          params['sort'] = 'asc'; // Aufsteigende Sortierung
+        } else if (this.sortOrder === 'desc') {
+          params['sort'] = 'desc'; // Absteigende Sortierung
+        }
         if (this.filter_type != '') {
           params['type_id'] = this.filter_type
         }
@@ -113,6 +121,17 @@ export default {
       this.get_values().then((result) => {
         this.values = result;
       });
+    },
+    updateSort(selectedSort) {
+      this.sortOrder = selectedSort;
+      this.sortValues(); // Sortiere die Werte
+    },
+    sortValues() {
+      if (this.sortOrder === 'asc') {
+        this.values.sort((a, b) => a.value - b.value); // Aufsteigende Sortierung
+      } else if (this.sortOrder === 'desc') {
+        this.values.sort((a, b) => b.value - a.value); // Absteigende Sortierung
+      }
     }
   }
 }
@@ -122,8 +141,10 @@ export default {
   <div class="container p-1">
     <h1 class="row">RDP</h1>
     <FilterDropdown :types="value_types" @filter="updateFilter" />
+    <SortDropdown @sort="updateSort" />
     <InputBar @search="update_search" />
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
     <ValuesDisplay :values="values" :value_types="value_types" />
+    
   </div>
 </template>
