@@ -5,6 +5,7 @@ import ValuesDisplay from './components/ValuesDisplay.vue'
 import TypesDisplay from './components/TypesDisplay.vue'
 import FilterDropdown from './components/FilterDropdown.vue'
 import SortDropdown from './components/SortDropdown.vue'
+import DatePicker from './components/DatePicker.vue'
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
 </script>
@@ -83,39 +84,39 @@ export default {
     },
     get_values() {
       const promise = new Promise<Value[]>((accept, reject) => {
-        const url = '/api/value/'
-        var params : { [key: string]: string } = {}
+        const url = '/api/value/';
+        var params: { [key: string]: string } = {};
         if (this.filter !== '') {
           params['type_id'] = this.filter;
         }
         if (this.sortOrder === 'asc') {
-          params['sort'] = 'asc'; // Aufsteigende Sortierung
+          params['sort'] = 'asc';
         } else if (this.sortOrder === 'desc') {
-          params['sort'] = 'desc'; // Absteigende Sortierung
+          params['sort'] = 'desc';
         }
         if (this.filter_type != '') {
-          params['type_id'] = this.filter_type
+          params['type_id'] = this.filter_type;
         }
         if (this.filter_end != '') {
-          params['end'] = this.filter_end
+          params['end'] = this.filter_end;
         }
         if (this.filter_start != '') {
-          params['start']=this.filter_start
+          params['start'] = this.filter_start;
         }
-        console.log('Trying to get url', url)
+        console.log('Trying to get url', url);
         axios
           .get(url, { params: params })
           .then((result) => {
-            // console.log('Got values: ', result.data)
-            accept(result.data)
+            accept(result.data);
           })
           .catch((error) => {
-            console.error(error)
-            reject(error)
-          })
-      })
-      return promise
+            console.error(error);
+            reject(error);
+          });
+      });
+      return promise;
     },
+
     updateFilter(selectedType) {
       this.filter = selectedType;
       this.get_values().then((result) => {
@@ -132,7 +133,14 @@ export default {
       } else if (this.sortOrder === 'desc') {
         this.values.sort((a, b) => b.value - a.value); // Absteigende Sortierung
       }
-    }
+    },
+    updateDateFilter(selectedDateRange) {
+      this.filter_start = selectedDateRange.start;
+      this.filter_end = selectedDateRange.end;
+      this.get_values().then((result) => {
+        this.values = result;
+      });
+    },
   }
 }
 </script>
@@ -143,8 +151,9 @@ export default {
     <FilterDropdown :types="value_types" @filter="updateFilter" />
     <SortDropdown @sort="updateSort" />
     <InputBar @search="update_search" />
+    <DatePicker @filter="updateDateFilter" />
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
     <ValuesDisplay :values="values" :value_types="value_types" />
-    
   </div>
 </template>
+
