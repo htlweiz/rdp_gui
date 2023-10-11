@@ -9,6 +9,7 @@ import { Value } from './scripts/value';
 
 <script lang="ts">
 
+
 /**
  * Base class representing a command.
  */
