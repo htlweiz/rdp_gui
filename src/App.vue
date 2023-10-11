@@ -145,6 +145,10 @@ export default {
          this.values = result;
        });
      },
+
+     resetFilters() {
+      location.reload(); // Reloads the current page
+    },
   }
 }
 </script>
@@ -153,10 +157,14 @@ export default {
   <div class="container p-1">
     <h1 class="row">RDP</h1>
     <FilterDropdown :types="value_types" @filter="updateFilter" />
-    <DatePicker @filter="updateDateFilter" /> <!-- Hier hinzugefügt -->
+    <DatePicker @filter="updateDateFilter" />
     <SortButton label="Sort Lowest to Highest" direction="asc" @sort="sortValues" />
     <SortButton label="Sort Highest to Lowest" direction="desc" @sort="sortValues" />
     <InputBar @search="update_search" />
+    <div class="row dark-red-bg text-center mb-2 d-flex justify-content-center">
+      <button @click="resetFilters" class="btn btn-danger">Reset all Filters</button>
+    </div>
+
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
     <ValuesDisplay :values="values" :value_types="value_types" />
   </div>
