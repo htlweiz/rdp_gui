@@ -9,89 +9,135 @@ import { Value } from './scripts/value';
 
 <script lang="ts">
 
-// Base Command class
+/**
+ * Base class representing a command.
+ */
 class Command {
   component: any;
 
+  /**
+   * Constructor to initialize the command with a component.
+   * @param component The component associated with the command.
+   */
   constructor(component: any) {
     this.component = component;
   }
 
-  execute(value: string): void {
+  /**
+   * Method to execute the command with a given value.
+   * @param value The value used for executing the command.
+   */
+   execute(value: string): void {
     console.log('Default execute method. Value:', value);
   }
 }
 
-// Command to filter by type
+/**
+ * Command to filter items based on their type.
+ */
 class TypeFilterCommand extends Command {
+  /**
+   * Executes the type filter command by updating the filter type and logging the update.
+   * @param value The value to use for filtering.
+   */
   execute(value: string): void {
     this.component.filter_type = this.component.getTypeId(value);
     console.log('Update typeid', this.component.filter_type);
   }
 }
 
-// Command to start filtering
+/**
+ * Command to start filtering.
+ */
 class StartFilterCommand extends Command {
+  /**
+   * Executes the start filter command by updating the filter start value.
+   * @param value The value to start filtering.
+   */
   execute(value: string): void {
     this.component.filter_start = value;
   }
 }
 
-// Command to end filtering
+/**
+ * Command to end filtering.
+ */
 class EndFilterCommand extends Command {
+  /**
+   * Executes the end filter command by updating the filter end value.
+   * @param value The value to end filtering.
+   */
   execute(value: string): void {
     this.component.filter_end = value;
   }
 }
 
-// Command to create and execute a command
-class ExecuteCommand extends Command {
-  key: string;
-  arg: string;
+/**
+ * CommandFactory is responsible for creating and managing commands.
+ * It provides a method to build a dictionary of command builders, associating
+ * each command type with its corresponding builder function.
+ */
+class CommandFactory {
+  /**
+   * Builds a command executor dictionary.
+   * @returns A dictionary where keys are command names and values are functions
+   *          that build the corresponding command based on the given component.
+   */
+  static buildCommandExecutor(): { [key: string]: (component: any) => Command } {
+    // Dictionary to store commands and their builders
+    const commands: { [key: string]: (component: any) => Command } = {};
 
-  constructor(component: any, key: string, arg: string) {
-    super(component);
-    this.key = key;
-    this.arg = arg;
+    // Assigning a command builder for filtering 
+    commands['type'] = (component: any) => new TypeFilterCommand(component);
+    commands['start'] = (component: any) => new StartFilterCommand(component);
+    commands['end'] = (component: any) => new EndFilterCommand(component);
+
+    // Return the dictionary of commands and their builders
+    return commands;
   }
+}
 
-  execute(): void {
-    const CommandClass = Executor.commands[this.key];
-    if (CommandClass) {
-      const command = new CommandClass(this.component);
-      command.execute(this.arg);
+/**
+ * Executor class responsible for managing and executing commands.
+ * This class handle the execution of various commands based on provided keys
+ * and manage the registration of existing filter commands.
+ */
+class Executor {
+  /**
+   * Dictionary to store command names as keys and functions to build commands as values.
+   * The commands are built using the CommandFactory.
+   */
+  static commands: { [key: string]: (component: any) => Command } = CommandFactory.buildCommandExecutor();
+
+  /**
+   * Method to execute a specific command.
+   * @param key The key representing the command type to be executed.
+   * @param arg The argument to be used for executing the command.
+   * @param component The associated component for the command.
+   */
+  static execute(key: string, arg: string, component: any): void {
+    const commandBuilder = this.commands[key];  // Retrieve the corresponding command builder for the given key
+
+    if (commandBuilder) {
+      const command = commandBuilder(component);  // Create a command instance using the builder
+      command.execute(arg);  // Execute the command by passing the argument
     } else {
-      console.log('Ignoring command', this.key, this.arg);
+      console.log('Ignoring command', key, arg);  // If the command is not found, log a message
     }
   }
-}
 
-// Executor maps keys to respective command classes and registers them
-class Executor {
-  static type = TypeFilterCommand;
-  static start = StartFilterCommand;
-  static end = EndFilterCommand;
-
-  // Dictionary to store registered commands
-  static commands: { [key: string]: typeof Command } = {};
-
-  // Method to register a command
-  static register(key: string, klasse: typeof Command): void {
-    this.commands[key] = klasse;
-  }
-
-  // Method to execute a command based on key and arg
-  static execute(key: string, arg: string, component: any): void {
-    const ExecuteCommandClass = ExecuteCommand;
-    const executeCommand = new ExecuteCommandClass(component, key, arg);
-    executeCommand.execute();
+  /**
+   * Method to register filter commands.
+   * This method associates keys (command names) with their corresponding command builders.
+   */
+  static registerFilterCommands(): void {
+    // Associate the keys (command names) with the corresponding command builders
+    this.commands['type'] = (component: any) => new TypeFilterCommand(component);
+    this.commands['start'] = (component: any) => new StartFilterCommand(component);
+    this.commands['end'] = (component: any) => new EndFilterCommand(component);
   }
 }
 
-// Register commands
-Executor.register('type', TypeFilterCommand);
-Executor.register('start', StartFilterCommand);
-Executor.register('end', EndFilterCommand);
 
 export default {
   data() {
