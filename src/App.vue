@@ -4,6 +4,8 @@ import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
 import TypesDisplay from './components/TypesDisplay.vue'
 import filterdropdown from './components/filterdropdown.vue'
+import SortDropdown from './components/SortDropdown.vue'
+import SortDate from './components/SortDate.vue'
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
 </script>
@@ -16,16 +18,16 @@ export default {
       value_types: new Array<ValueType>(),
       filter_start: '',
       filter_end: '',
-      filter_type: '', // <--- The missing comma
-      filter: ''
-    }
+      filter_type: '',
+      filter: '',
+    };
   },
 
   mounted() {
-    this.get_types()
+    this.get_types();
     this.get_values().then((data) => {
-      this.values = data
-    })
+      this.values = data;
+    });
   },
   methods: {
     getTypeId(type_name: string) {
@@ -80,40 +82,75 @@ export default {
     },
     get_values() {
       const promise = new Promise<Value[]>((accept, reject) => {
-        const url = '/api/value/'
-        var params : { [key: string]: string } = {}
+        const url = '/api/value/';
+        var params: { [key: string]: string } = {};
         if (this.filter !== '') {
           params['type_id'] = this.filter;
         }
-        if (this.filter_type != '') {
-          params['type_id'] = this.filter_type
+        if (this.filter_start != '') {
+          params['start'] = this.filter_start;
         }
         if (this.filter_end != '') {
-          params['end'] = this.filter_end
+          params['end'] = this.filter_end;
         }
-        if (this.filter_start != '') {
-          params['start']=this.filter_start
+        if (this.sortOrder === 'asc') {
+          params['sort'] = 'asc';
+        } else if (this.sortOrder === 'desc') {
+          params['sort'] = 'desc';
         }
-        console.log('Trying to get url', url)
+        if (this.filter_type != '') {
+          params['type_id'] = this.filter_type;
+        }
+        console.log('Trying to get url', url);
         axios
           .get(url, { params: params })
           .then((result) => {
-            // console.log('Got values: ', result.data)
-            accept(result.data)
+            accept(result.data);
           })
           .catch((error) => {
-            console.error(error)
-            reject(error)
-          })
-      })
-      return promise
+            console.error(error);
+            reject(error);
+          });
+      });
+      return promise;
     },
     updateFilter(selectedType) {
       this.filter = selectedType;
       this.get_values().then((result) => {
         this.values = result;
       });
-    }
+    },
+    sortValues(order: 'asc' | 'desc') {
+      this.values.sort((a, b) => {
+        const aValue = a.value.toString(); // Convert to string
+        const bValue = b.value.toString(); // Convert to string
+
+        if (order === 'asc') {
+          return parseFloat(aValue) - parseFloat(bValue); // Compare numerically
+        } else {
+          return parseFloat(bValue) - parseFloat(aValue); // Compare numerically
+        }
+      });
+    },
+    updateDateFilter(selectedDateRange) {
+       this.filter_start = selectedDateRange.start;
+       this.filter_end = selectedDateRange.end;
+       this.get_values().then((result) => {
+         this.values = result;
+      });
+    },
+    resetFilters() {
+      this.filter_start = '';
+      this.filter_end = '';
+      this.filter_type = '';
+      this.filter = '';
+      this.sortDirection = 'asc';
+      this.get_values().then((result) => {
+        this.values = result;
+        // Seite neu laden
+        window.location.reload();
+      });
+    },
   }
 }
 </script>
@@ -123,7 +160,10 @@ export default {
     <h1 class="row">RDP</h1>
     <InputBar @search="update_search" />
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
+    <SortDropdown @sort="sortValues" />
     <filterdropdown :types="value_types" @filter="updateFilter" />
+    <SortDate @filter="updateDateFilter" /> <!-- Hier hinzugefügt -->
+    <button @click="resetFilters" style="background-color: #007BFF; color: #fff; border: none; border-radius: 4px; padding: 8px 16px; font-weight: bold; cursor: pointer;">Reset</button>
     <ValuesDisplay :values="values" :value_types="value_types" />
   </div>
 </template>
