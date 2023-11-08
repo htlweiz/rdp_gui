@@ -3,12 +3,21 @@ import axios from 'axios'
 import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
 import TypesDisplay from './components/TypesDisplay.vue'
+import FilterDropdown from './components/FilterDropdown.vue'
 
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
 </script>
 
 <script lang="ts">
+interface Filter {
+  start?: string;
+  end?: string;
+  type?: string;
+  lowerValue?: string;
+  upperValue?: string; 
+}
+
 export default {
   data() {
     return {
@@ -16,7 +25,9 @@ export default {
       value_types: new Array<ValueType>(),
       filter_start : '',
       filter_end : '',
-      filter_type : ''
+      filter_type : '',
+      filter_lowerValue : '',
+      filter_upperValue : '' 
     }
   },
   mounted() {
@@ -35,6 +46,29 @@ export default {
         }
       }
       return return_value
+    },
+    updateFilter(filter: Filter) {
+      if (filter.start && filter.end) {
+        // Set default values for start and end dates
+        let startDate = filter.start ? new Date(filter.start).getTime() / 1000 : new Date(0).getTime() / 1000;
+        let endDate = filter.end ? new Date(filter.end).getTime() / 1000 : new Date().getTime() / 1000; 
+
+        this.filter_start = startDate.toString();
+        this.filter_end = endDate.toString();
+      }
+
+      if (filter.lowerValue) {
+        this.filter_lowerValue = filter.lowerValue;
+      }
+
+      if (filter.upperValue) {
+        this.filter_upperValue = filter.upperValue;
+      }
+
+      this.get_values().then((result) => {
+        this.values = result;
+        console.log(result)
+      });
     },
     update_search(args: string[]) {
       console.log('New search arguemnts', args)
@@ -89,6 +123,13 @@ export default {
         if (this.filter_start != '') {
           params['start']=this.filter_start
         }
+        if (this.filter_lowerValue != '') {
+          params['lowerValue'] = this.filter_lowerValue;
+        }
+
+        if (this.filter_upperValue != '') {
+          params['upperValue'] = this.filter_upperValue;
+        }
         console.log('Trying to get url', url)
         axios
           .get(url, { params: params })
@@ -111,6 +152,9 @@ export default {
   <div class="container p-1">
     <h1 class="row">RDP</h1>
     <InputBar @search="update_search" />
+    <FilterDropdown :types="value_types" @updateFilter="updateFilter" />
+    <DateFilter @updateFilter="updateFilter" />
+    <ValueFilter @updateFilter="updateFilter" />
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
     <ValuesDisplay :values="values" :value_types="value_types" />
   </div>
