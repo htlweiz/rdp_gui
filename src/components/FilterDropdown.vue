@@ -9,13 +9,17 @@
     </div>
     <div v-if="!filters_hidden">
       <DateFilter @updateFilter="updateFilter" />
+      <TypeFilter :types="types" @updateFilter="updateFilter" />
       <ValueFilter @updateFilter="updateFilter" />
+      <button @click="$emit('resetFilters')">Reset Filters</button>
     </div>
   </div>
 </template>
 
+
 <script>
 import DateFilter from './DateFilter.vue'
+import TypeFilter from './TypeFilter.vue'
 import ValueFilter from './ValueFilter.vue'
 
 export default {
@@ -35,6 +39,7 @@ export default {
   },
   components: {
     DateFilter,
+    TypeFilter,
     ValueFilter
   }
 }

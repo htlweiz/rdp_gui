@@ -26,8 +26,8 @@ export default {
       filter_start : '',
       filter_end : '',
       filter_type : '',
-      filter_lowerValue : '',
-      filter_upperValue : '' 
+      filter_lowerValue: '',
+      filter_upperValue: '',
     }
   },
   mounted() {
@@ -57,17 +57,29 @@ export default {
         this.filter_end = endDate.toString();
       }
 
-      if (filter.lowerValue) {
+      if (filter.type !== null && filter.type !== undefined) {
+        this.filter_type = filter.type;
+      }
+
+      if (filter.lowerValue !== null && filter.lowerValue !== undefined) {
         this.filter_lowerValue = filter.lowerValue;
       }
 
-      if (filter.upperValue) {
+      if (filter.upperValue !== null && filter.upperValue !== undefined) {
         this.filter_upperValue = filter.upperValue;
       }
 
       this.get_values().then((result) => {
         this.values = result;
         console.log(result)
+      });
+    },
+    resetFilters() {
+      this.filter_start = '';
+      this.filter_end = '';
+      this.filter_type = '';
+      this.get_values().then((result) => {
+        this.values = result;
       });
     },
     update_search(args: string[]) {
@@ -121,21 +133,25 @@ export default {
           params['end'] = this.filter_end
         }
         if (this.filter_start != '') {
-          params['start']=this.filter_start
-        }
-        if (this.filter_lowerValue != '') {
-          params['lowerValue'] = this.filter_lowerValue;
-        }
-
-        if (this.filter_upperValue != '') {
-          params['upperValue'] = this.filter_upperValue;
+          params['start'] = this.filter_start
         }
         console.log('Trying to get url', url)
         axios
           .get(url, { params: params })
           .then((result) => {
-            // console.log('Got values: ', result.data)
-            accept(result.data)
+            let values: Value[] = result.data;
+
+            if (this.filter_lowerValue != '') {
+              let lowerValue = Number(this.filter_lowerValue);
+              values = values.filter((value: Value) => value.value >= lowerValue);
+            }
+
+            if (this.filter_upperValue != '') {
+              let upperValue = Number(this.filter_upperValue);
+              values = values.filter((value: Value) => value.value <= upperValue);
+            }
+
+            accept(values);
           })
           .catch((error) => {
             console.error(error)
@@ -152,8 +168,9 @@ export default {
   <div class="container p-1">
     <h1 class="row">RDP</h1>
     <InputBar @search="update_search" />
-    <FilterDropdown :types="value_types" @updateFilter="updateFilter" />
+    <FilterDropdown :types="value_types" @updateFilter="updateFilter" @resetFilters="resetFilters" />
     <DateFilter @updateFilter="updateFilter" />
+    <TypeFilter :types="value_types" @updateFilter="updateFilter" />
     <ValueFilter @updateFilter="updateFilter" />
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
     <ValuesDisplay :values="values" :value_types="value_types" />
