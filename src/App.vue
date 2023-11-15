@@ -18,25 +18,28 @@ interface Command {
   execute(): void
 }
 
-interface CommandFactory {
-  createCommand(value: string): Command
-}
-
-class GetValueTypeFactory implements CommandFactory {
-  createCommand(value: string): GetValueType {
-    return new GetValueType(value)
+class CommandFactory {
+  static buildCommandExecutor(): CommandExecutor {
+    const commandMap = {
+      type: GetValueType,
+      start: GetStart,
+      end: GetEnd
+    }
+    return new CommandExecutor(commandMap)
   }
 }
 
-class GetStartFactory implements CommandFactory {
-  createCommand(value: string): GetStart {
-    return new GetStart(value)
-  }
-}
+class CommandExecutor {
+  commandMap: { [key: string]: new (value: string) => Command }
 
-class GetEndFactory implements CommandFactory {
-  createCommand(value: string): GetEnd {
-    return new GetEnd(value)
+  constructor(commandMap: {}) {
+    this.commandMap = commandMap
+  }
+
+  execute(key: string, value: string) {
+    const CommandClass = this.commandMap[key]
+    const command = new CommandClass(value)
+    command.execute()
   }
 }
 
@@ -64,7 +67,7 @@ class GetEnd implements Command {
 const getTypeId = (type_name: string) => {
   let return_value = ''
   for (const valueType of value_types.value) {
-    if (valueType.type_name && valueType.type_name.toUpperCase() === type_name.toUpperCase()) {
+    if (valueType.type_name.toUpperCase() === type_name.toUpperCase()) {
       return_value = '' + valueType.id
       console.log('Found matching type', valueType)
     }
@@ -72,20 +75,12 @@ const getTypeId = (type_name: string) => {
   return return_value
 }
 
-const update_search = (commandStrs: string[]) => {
-  const factoryMap: { [key: string]: () => CommandFactory } = {
-    type: () => new GetValueTypeFactory(),
-    start: () => new GetStartFactory(),
-    end: () => new GetEndFactory()
-  }
-
-  for (const commandStr of commandStrs) {
+const update_search = (args: string[]) => {
+  const commandExecutor = CommandFactory.buildCommandExecutor()
+  for (const commandStr of args) {
     if (!commandStr.includes(':')) continue
     const [key, value] = commandStr.split(':')
-    const createFactory = factoryMap[key]
-    const factory = createFactory()
-    const command = factory.createCommand(value)
-    command.execute()
+    commandExecutor.execute(key, value)
   }
   get_values()
 }
