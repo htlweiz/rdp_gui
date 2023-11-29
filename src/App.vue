@@ -166,7 +166,7 @@ export default {
 
 <template>
   <div class="container p-1">
-    <h1 class="row">RDP</h1>
+    <h1 class="row">--- RDP ---</h1>
     <InputBar @search="update_search" />
     <FilterDropdown :types="value_types" @updateFilter="updateFilter" @resetFilters="resetFilters" />
     <DateFilter @updateFilter="updateFilter" />
