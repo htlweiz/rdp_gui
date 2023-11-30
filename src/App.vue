@@ -126,17 +126,7 @@ class Executor {
       console.log('Ignoring command', key, arg);  // If the command is not found, log a message
     }
   }
-
-  /**
-   * Method to register filter commands.
-   * This method associates keys (command names) with their corresponding command builders.
-   */
-  static registerFilterCommands(): void {
-    // Associate the keys (command names) with the corresponding command builders
-    this.commands['type'] = (component: any) => new TypeFilterCommand(component);
-    this.commands['start'] = (component: any) => new StartFilterCommand(component);
-    this.commands['end'] = (component: any) => new EndFilterCommand(component);
-  }
+ 
 }
 
 
