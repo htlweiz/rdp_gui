@@ -1,11 +1,13 @@
 $theme-colors: (
-  "primary": #CEC1C4,
-  "secondary": lightgray,
+  "primary": #88dfe2,
+  "secondary": rgb(124, 167, 224),
+
+  
   "danger": #ff4136,
 );
 
 @import 'bootstrap/scss/bootstrap.scss';
 
 body {
-    background-color: #EEE1C6;
+    background-color: #073c81;
 }

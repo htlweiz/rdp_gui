@@ -109,7 +109,7 @@ export default {
 
 <template>
   <div class="container p-1">
-    <h1 class="row">RDP</h1>
+    <h1 class="row">--- RDP ---</h1>
     <InputBar @search="update_search" />
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
     <ValuesDisplay :values="values" :value_types="value_types" />
