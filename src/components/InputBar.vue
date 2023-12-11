@@ -13,6 +13,7 @@ export default {
     },
     emits: ['search'],
     methods: {
+        // emit "search" event every second while typing
         async search_update() {
             if(this.typing) {
                 return
