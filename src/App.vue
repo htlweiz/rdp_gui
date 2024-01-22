@@ -6,6 +6,9 @@ import TypesDisplay from './components/TypesDisplay.vue'
 
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
+
+import { Involker, ConcreteHelloCommand, FilterStartCommand, FilterTypeCommand, FilterEndCommand } from './scripts/filtercommands'
+
 </script>
 
 <script lang="ts">
@@ -16,7 +19,8 @@ export default {
       value_types: new Array<ValueType>(),
       filter_start : '',
       filter_end : '',
-      filter_type : ''
+      filter_type : '',
+      involker: new Involker(this)
     }
   },
   mounted() {
@@ -24,6 +28,12 @@ export default {
     this.get_values().then((data) => {
       this.values = data
     })
+    // this.involker = new Involker();
+    this.involker.register("test", ConcreteHelloCommand)
+    this.involker.register("start", FilterStartCommand)
+    this.involker.register("end", FilterEndCommand)
+    this.involker.register("type", FilterTypeCommand)
+    console.log("App.vue mounted")
   },
   methods: {
     getTypeId(type_name: string) {
@@ -44,23 +54,7 @@ export default {
       for (var i = 0; i < args.length; i++) {
         const command = args[i]
         console.log('handling command', command)
-        const command_and_args = args[i].split(':')
-        if (command_and_args.length == 2) {
-          const key = command_and_args[0]
-          const value = command_and_args[1]
-          if (key == 'type') {
-            this.filter_type = this.getTypeId(value)
-            console.log('Update typeid', this.filter_type)
-            continue
-          } else if (key == 'start') {
-            this.filter_start = value
-            continue
-          } else if (key == 'end') {
-            this.filter_end = value
-            continue
-          }
-        }
-        console.log('Ignoring command', command)
+        this.involker.execute(command)
       }
       this.get_values().then((result) => {
         this.values = result
