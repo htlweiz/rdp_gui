@@ -9,7 +9,7 @@ export default {
     }},
     props: ['the_commands'],
     setup(props) {
-        console.log(props.the_commands)
+        console.log(props)
     },
     emits: ['search'],
     methods: {

@@ -13,7 +13,7 @@ export default {
     },
     mounted() {
         console.log("Mounted with ", this.type_prop)
-        this.edit_type.id=this.type_prop.id
+        this.edit_type.value_type_id=this.type_prop.value_type_id
         this.edit_type.type_name=this.type_prop.type_name
         this.edit_type.type_unit=this.type_prop.type_unit
     },
@@ -24,7 +24,7 @@ export default {
             console.log("Changed is now",this.changed)
         },
         update_type() {
-            axios.put("/api/type/"+this.edit_type.id+"/",this.edit_type)
+            axios.put("/api/type/"+this.edit_type.value_type_id+"/",this.edit_type)
                 .then((result) => {
                     console.log(result)
                     this.$emit("update_type")

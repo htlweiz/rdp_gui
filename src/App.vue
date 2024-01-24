@@ -3,6 +3,7 @@ import axios from 'axios'
 import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
 import TypesDisplay from './components/TypesDisplay.vue'
+import MinMax from './components/MinMax.vue'
 
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
@@ -20,11 +21,17 @@ export default {
       filter_start : '',
       filter_end : '',
       filter_type : '',
-      involker: new Involker(this)
+      involker: new Involker(this),
+      min: 0,
+      max: 0
     }
   },
   mounted() {
     this.get_types()
+    this.get_min_max().then((data) => {
+      this.min = data[0].value
+      this.max = data[1].value
+    })
     this.get_values().then((data) => {
       this.values = data
     })
@@ -40,7 +47,7 @@ export default {
       var return_value = ''
       for (var i = 0; i < this.value_types.length; i++) {
         if (this.value_types[i].type_name.toUpperCase() == type_name.toUpperCase()) {
-          return_value = '' + this.value_types[i].id
+          return_value = '' + this.value_types[i].value_type_id
           console.log('Found matching type', this.value_types[i])
         }
       }
@@ -56,6 +63,10 @@ export default {
         console.log('handling command', command)
         this.involker.execute(command)
       }
+      this.get_min_max().then((result) => {
+        this.min = result[0].value
+        this.max = result[1].value
+      })
       this.get_values().then((result) => {
         this.values = result
       })
@@ -69,6 +80,32 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    get_min_max() {
+      console.log("Entering min max")
+      const promise = new Promise<Value[]>((accept, reject) => {
+        const url = '/api/value/minmax/'
+        var params : { [key: string]: string } = {}
+        params['type_id'] = '0';
+        if (this.filter_start != '' ) {
+          params['start'] = this.filter_start
+        }
+        if (this.filter_end != '' ) {
+          params['end'] = this.filter_end
+        }
+        console.log('Trying to get url', url)
+        axios
+          .get(url, { params: params })
+          .then((result) => {
+            console.log("Min max data ", result.data)
+            accept(result.data)
+          })
+          .catch((error) => {
+            console.error(error)
+            reject(error)
+          })
+      })
+      return promise
     },
     get_values() {
       const promise = new Promise<Value[]>((accept, reject) => {
@@ -108,4 +145,16 @@ export default {
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
     <ValuesDisplay :values="values" :value_types="value_types" />
   </div>
+  <div class="myright">
+    <MinMax :min=min :max=max unit="C"/>
+  </div>
 </template>
+
+<style type="inline">
+.myright {
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  top: 0;
+}
+</style>
