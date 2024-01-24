@@ -1,8 +1,5 @@
 <script lang="ts">
 
-import { ValueType } from '@/scripts/value_type';
-import axios from 'axios';
-
 export default {
     props: ["min", "max", "name", "unit"],
     data() {

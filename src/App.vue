@@ -30,14 +30,8 @@ export default {
   },
   mounted() {
     this.get_types()
-    this.get_min_max().then((data) => {
-      this.min = data[0].value
-      this.max = data[1].value
-    })
-    this.get_values().then((data) => {
-      this.values = data
-    })
-    // this.involker = new Involker();
+    this.get_min_max()
+    this.get_values()
     this.involker.register("test", ConcreteHelloCommand)
     this.involker.register("start", FilterStartCommand)
     this.involker.register("end", FilterEndCommand)
@@ -65,19 +59,16 @@ export default {
         console.log('handling command', command)
         this.involker.execute(command)
       }
-      this.get_min_max().then((result) => {
-        this.min = result[0].value
-        this.max = result[1].value
-      })
-      this.get_values().then((result) => {
-        this.values = result
-      })
+      this.get_min_max()
+      this.get_values()
     },
     get_types() {
       axios
         .get('/api/type/')
         .then((result) => {
           this.value_types = result.data
+          this.temp_name = result.data[0].type_name
+          this.temp_unit = result.data[0].type_unit
         })
         .catch((error) => {
           console.error(error)
@@ -100,6 +91,8 @@ export default {
           .get(url, { params: params })
           .then((result) => {
             console.log("Min max data ", result.data)
+            this.min = result.data[0].value
+            this.max = result.data[1].value
             accept(result.data)
           })
           .catch((error) => {
@@ -127,6 +120,7 @@ export default {
           .get(url, { params: params })
           .then((result) => {
             // console.log('Got values: ', result.data)
+            this.values=result.data
             accept(result.data)
           })
           .catch((error) => {
