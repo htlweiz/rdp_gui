@@ -10,7 +10,7 @@ export default {
   methods: {
     getTypeName(value: Value) {
       for (var i = 0; i < this.value_types.length; i++) {
-        if (this.value_types[i].id == value.value_type_id) {
+        if (this.value_types[i].value_type_id == value.value_type_id) {
           return this.value_types[i].type_name
         }
       }
@@ -18,7 +18,7 @@ export default {
     },
     getUnit(value: Value) {
       for (var i = 0; i < this.value_types.length; i++) {
-        if (this.value_types[i].id == value.value_type_id) {
+        if (this.value_types[i].value_type_id == value.value_type_id) {
           return this.value_types[i].type_unit
         }
       }
