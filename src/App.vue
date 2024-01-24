@@ -23,7 +23,9 @@ export default {
       filter_type : '',
       involker: new Involker(this),
       min: 0,
-      max: 0
+      max: 0,
+      temp_name: "T",
+      temp_unit: "C"
     }
   },
   mounted() {
@@ -139,22 +141,38 @@ export default {
 </script>
 
 <template>
-  <div class="container p-1">
-    <h1 class="row">RDP</h1>
-    <InputBar @search="update_search" />
-    <TypesDisplay :value_types="value_types" @update_type="get_types" />
-    <ValuesDisplay :values="values" :value_types="value_types" />
+  <div class="bg-primary myright m-0 p-0">
+    <div class="row m-0">
+      <div class="col-2">
+        <MinMax :min=min :max=max :name=temp_name :unit=temp_unit />
+      </div>
+      <div class="col bg-secondary m-4 p-3">
+        <div class="container">
+          <h1 class="row">RDP</h1>
+          <InputBar @search="update_search" />
+          <TypesDisplay :value_types="value_types" @update_type="get_types" />
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="myright">
-    <MinMax :min=min :max=max :name=value_types[0].type_name :unit=value_types[0].type_unit />
+  <div class="scroller">
+    <ValuesDisplay :values="values" :value_types="value_types" />
   </div>
 </template>
 
 <style type="inline">
 .myright {
   position: fixed;
+  overflow: hidden;
   z-index: 10;
   left: 0;
   top: 0;
+  width: 100%;
+}
+.scroller {
+  margin-top:200px;
+  overflow-x:hidden;
+  overflow-y: scroll;
+  height: max-content;
 }
 </style>
