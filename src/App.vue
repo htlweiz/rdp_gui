@@ -152,7 +152,7 @@ export default {
 
 <style type="inline">
 .myright {
-  position: absolute;
+  position: fixed;
   z-index: 10;
   left: 0;
   top: 0;
