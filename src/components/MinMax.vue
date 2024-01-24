@@ -4,7 +4,7 @@ import { ValueType } from '@/scripts/value_type';
 import axios from 'axios';
 
 export default {
-    props: ["min", "max", "unit"],
+    props: ["min", "max", "name", "unit"],
     data() {
     },
     mounted() {
@@ -16,15 +16,15 @@ export default {
 </script>
 
 <template>
-  <div class="bg-secondary m-1 p-1">
-    Temperature 
+  <div class="bg-secondary rounded text-center m-3 p-2">
+    {{ name }} 
     <div class="container m-0 p-0">
-      <div class="row m-0 p-0">
-        <div class="col my_blue m-0 p-0">
-          {{ min }} {{ unit }}
+      <div class="row m-0 p-1">
+        <div class="col rounded my_blue m-1 p-1">
+          {{ Number(min).toFixed(1) }} {{ unit }}
         </div>
-        <div class="col my_red m-0 p-0">
-          {{ max }} {{ unit }}
+        <div class="col rounded my_red m-1 p-1">
+          {{ Number(max).toFixed(1) }} {{ unit }}
         </div>
       </div>
 

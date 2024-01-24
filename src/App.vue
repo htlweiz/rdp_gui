@@ -146,7 +146,7 @@ export default {
     <ValuesDisplay :values="values" :value_types="value_types" />
   </div>
   <div class="myright">
-    <MinMax :min=min :max=max unit="C"/>
+    <MinMax :min=min :max=max :name=value_types[0].type_name :unit=value_types[0].type_unit />
   </div>
 </template>
 
