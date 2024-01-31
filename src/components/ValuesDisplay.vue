@@ -40,6 +40,7 @@ export default {
     </div>
     <div class="col-1">type</div>
     <div class="col">value</div>
+    <div class="col">comment</div>
   </div>
   <div class="row bg-secondary rounded mt-1" v-for="value in values" :key="value">
     <div class="col-1">
@@ -48,6 +49,6 @@ export default {
     <div class="col-1">
       {{ getTypeName(value) }}
     </div>
-    <div class="col">{{ value.value.toFixed(2) }} {{ getUnit(value) }}</div>
+    <div class="col">{{ value.value.toFixed(2) }} {{ getUnit(value) }}</div><div class="col"> {{ value.comment }}</div>
   </div>
 </template>
