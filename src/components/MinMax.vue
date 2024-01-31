@@ -2,8 +2,6 @@
 
 export default {
     props: ["min", "max", "name", "unit"],
-    data() {
-    },
     mounted() {
         console.log("Mounted with: ", this.min, " ", this.max, " ", this.unit)
     },

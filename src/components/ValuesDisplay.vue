@@ -1,30 +1,14 @@
 <script lang="ts">
-import { Value } from '@/scripts/value'
+import SingleValueDisplay from './SingleValueDisplay.vue';
 
 export default {
-  props: ['values', 'value_types'],
-  setup(props) {
-    console.log(props.values)
-  },
-  emits: ['rename'],
-  methods: {
-    getTypeName(value: Value) {
-      for (var i = 0; i < this.value_types.length; i++) {
-        if (this.value_types[i].value_type_id == value.value_type_id) {
-          return this.value_types[i].type_name
-        }
-      }
-      return 'XXX'
+    props: ['values', 'value_types'],
+    setup(props) {
+        console.log(props.values);
     },
-    getUnit(value: Value) {
-      for (var i = 0; i < this.value_types.length; i++) {
-        if (this.value_types[i].value_type_id == value.value_type_id) {
-          return this.value_types[i].type_unit
-        }
-      }
-      return 'XXX'
-    }
-  }
+    emits: ['update_comment'],
+    methods: {},
+    components: { SingleValueDisplay }
 }
 </script>
 
@@ -42,13 +26,10 @@ export default {
     <div class="col">value</div>
     <div class="col">comment</div>
   </div>
-  <div class="row bg-secondary rounded mt-1" v-for="value in values" :key="value">
-    <div class="col-1">
-      {{ value.time }}
-    </div>
-    <div class="col-1">
-      {{ getTypeName(value) }}
-    </div>
-    <div class="col">{{ value.value.toFixed(2) }} {{ getUnit(value) }}</div><div class="col"> {{ value.comment }}</div>
-  </div>
+  <SingleValueDisplay :value=value
+                      :value_types=value_types
+                      class="row bg-secondary rounded mt-1"
+                      v-for="value in values"
+                      :key="value"
+                      @update_comment="$emit('update_comment')"/>
 </template>

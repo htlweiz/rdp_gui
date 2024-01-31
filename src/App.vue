@@ -150,7 +150,7 @@ export default {
     </div>
   </div>
   <div class="scroller">
-    <ValuesDisplay :values="values" :value_types="value_types" />
+    <ValuesDisplay :values="values" :value_types="value_types" @update_comment="get_values"/>
   </div>
 </template>
 
