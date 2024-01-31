@@ -36,6 +36,7 @@ export default {
           return 'XXX'
         },
         update_comment(){
+            this.edit_mode=false
             axios.put("/api/value/"+this.edit_value.value_id+"/", this.edit_value)
                 .then((result) => {
                     console.log(result)
