@@ -55,7 +55,7 @@ export default {
         <div class="col-1">
             {{ get_type_name(value) }}
         </div>
-        <div class="col">
+        <div class="col-2">
             {{ value.value.toFixed(2) }} {{ get_unit(value) }}
         </div>
         <div class="col" v-if="!edit_mode" v-on:click="edit_mode=true">
@@ -64,7 +64,7 @@ export default {
         <div class="col" v-if="edit_mode">
             <div class="row">
                 <input class="col bg-secondary rounded me-1" v-model="edit_value.comment">
-                <button class="col-1 bg-primary text-end rounded mb-1 button" v-on:click="update_comment()">submit</button>"
+                <button class="col-1 bg-primary text-center rounded mb-1 button" v-on:click="update_comment()">OK</button>"
             </div>
         </div>
     </div>
