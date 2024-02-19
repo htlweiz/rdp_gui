@@ -1,19 +1,19 @@
 <script lang="ts">
-import SingleTypeDisplay from './SingleTypeDisplay.vue';
+import SingleTypeDisplay from './SingleTypeDisplay.vue'
 export default {
-    props: ['value_types'],
-    data() {
-        return {
-            editor_hidden: true
-        };
-    },
-    methods: {
-        toggleEditor() {
-            this.editor_hidden = !this.editor_hidden;
-        }
-    },
-    components: { SingleTypeDisplay },
-    emits: ['update_type']
+  props: ['value_types'],
+  data() {
+    return {
+      editor_hidden: true
+    }
+  },
+  methods: {
+    toggleEditor() {
+      this.editor_hidden = !this.editor_hidden
+    }
+  },
+  components: { SingleTypeDisplay },
+  emits: ['update_type']
 }
 </script>
 
@@ -26,6 +26,11 @@ export default {
     </span>
   </div>
   <span v-if="!editor_hidden">
-    <SingleTypeDisplay :type_prop="value_type" v-for="value_type in value_types" :key="value_type" @update_type="$emit('update_type')"/>
+    <SingleTypeDisplay
+      :type_prop="value_type"
+      v-for="value_type in value_types"
+      :key="value_type"
+      @update_type="$emit('update_type')"
+    />
   </span>
 </template>

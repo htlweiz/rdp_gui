@@ -4,12 +4,16 @@ import axios from 'axios'
 import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
 import TypesDisplay from './components/TypesDisplay.vue'
+import TypesBarVue from './components/TypesBar.vue'
 
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
 
 const values = ref(new Array<Value>())
 const value_types = ref(new Array<ValueType>())
+const devices = ref(new Array<Value>())
+const rooms = ref(new Array<Value>())
+const locations = ref(new Array<Value>())
 const filter_start = ref('')
 const filter_end = ref('')
 const filter_type = ref('')
@@ -96,6 +100,39 @@ const get_types = () => {
     })
 }
 
+const get_devices = () => {
+  axios
+    .get('/api/device/')
+    .then((result) => {
+      devices.value = result.data
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+const get_rooms = () => {
+  axios
+    .get('/api/room/')
+    .then((result) => {
+      rooms.value = result.data
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
+const get_locations = () => {
+  axios
+    .get('/api/location/')
+    .then((result) => {
+      locations.value = result.data
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+
 const get_values = async () => {
   const params: { [key: string]: string } = {}
   if (filter_type.value) params['type_id'] = filter_type.value
@@ -113,6 +150,9 @@ const get_values = async () => {
 onMounted(() => {
   get_types()
   get_values()
+  get_devices()
+  get_rooms()
+  get_locations()
 })
 </script>
 
@@ -121,6 +161,13 @@ onMounted(() => {
     <h1 class="row">RDP</h1>
     <InputBar @search="update_search" />
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
-    <ValuesDisplay :values="values" :value_types="value_types" />
+    <TypesBarVue :devices="devices" :rooms="rooms" :locations="locations" />
+    <ValuesDisplay
+      :values="values"
+      :value_types="value_types"
+      :devices="devices"
+      :rooms="rooms"
+      :locations="locations"
+    />
   </div>
 </template>
