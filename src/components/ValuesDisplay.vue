@@ -28,6 +28,10 @@ export default {
       const time = new Date(value.time * 1000).toUTCString()
       return time
     },
+    getTime(value: Value) {
+      const time = new Date(value.time)
+      return `${time}`
+    },
     getDevice(value: Value) {
       for (var i = 0; i < this.devices.length; i++) {
         if (this.devices[i].id == value.device_id) {
@@ -54,6 +58,7 @@ export default {
 </script>
 
 <template>
+  <Sorting />
   <div class="row bg-primary mt-2 mb-1">
     <div
       class="col-1"

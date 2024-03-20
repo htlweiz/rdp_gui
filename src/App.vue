@@ -5,6 +5,7 @@ import InputBar from './components/InputBar.vue'
 import ValuesDisplay from './components/ValuesDisplay.vue'
 import TypesDisplay from './components/TypesDisplay.vue'
 import TypesBarVue from './components/TypesBar.vue'
+import Sorting from './components/Sorting.vue'
 
 import { ValueType } from './scripts/value_type'
 import { Value } from './scripts/value'
@@ -162,6 +163,7 @@ onMounted(() => {
     <InputBar @search="update_search" />
     <TypesDisplay :value_types="value_types" @update_type="get_types" />
     <TypesBarVue :devices="devices" :rooms="rooms" :locations="locations" />
+    <Sorting :values="values" :devices="devices" :rooms="rooms" :locations="locations" />
     <ValuesDisplay
       :values="values"
       :value_types="value_types"
