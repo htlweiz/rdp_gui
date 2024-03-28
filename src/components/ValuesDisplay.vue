@@ -1,5 +1,8 @@
 <script lang="ts">
 import { Value } from '@/scripts/value'
+import { Room } from '@/scripts/room'
+import { Location } from '@/scripts/location'
+import { Device } from '@/scripts/device'
 
 export default {
   props: ['values', 'value_types', 'devices', 'rooms', 'locations'],
@@ -40,16 +43,20 @@ export default {
       }
       return 'XXX'
     },
-    getRoom() {
+    getRoom(value: Value) {
       for (var i = 0; i < this.rooms.length; i++) {
-        return this.rooms[i].id
+        const device = this.devices.find((device: Device) => device.id === value.device_id)
+        const room = this.rooms.find((room: Room) => room.id === device.room_id)
+        return room.id
       }
       return 'XXX'
     },
-
-    getLocation() {
+    getLocation(value: Value) {
       for (var i = 0; i < this.locations.length; i++) {
-        return this.locations[i].id
+        const device = this.devices.find((device: Device) => device.id === value.device_id)
+        const room = this.rooms.find((room: Room) => room.id === device.room_id)
+        const location = this.locations.find((location: Location) => location.id == room.id)
+        return location.id
       }
       return 'XXX'
     }
@@ -59,7 +66,7 @@ export default {
 
 <template>
   <Sorting />
-  <div class="row bg-primary mt-2 mb-1">
+  <div class="row bg-primary rounded mt-2 mb-1" style="color: whitesmoke">
     <div
       class="col-1"
       data-bs-toggle="tooltip"
@@ -81,9 +88,9 @@ export default {
     </div>
     <div class="col">{{ value.value.toFixed(2) }} {{ getUnit(value) }}</div>
     <div class="col">{{ getDevice(value) }}</div>
-    <div class="col">{{ getRoom() }}</div>
+    <div class="col">{{ getRoom(value) }}</div>
     <div class="col">
-      {{ getLocation() }}
+      {{ getLocation(value) }}
     </div>
   </div>
 </template>

@@ -21,7 +21,7 @@ export default {
 </script>
 
 <template>
-  <div class="row bg-primary mt-1">
+  <div class="row bg-primary rounded p-1 mt-2 mb-3" style="color: whitesmoke">
     <span class="col-2">Types</span
     ><span class="col text-end" v-on:click="toggleEditor()">
       <i class="bi bi-caret-down-fill" title="Show TypeEditor" v-if="editor_hidden"></i>

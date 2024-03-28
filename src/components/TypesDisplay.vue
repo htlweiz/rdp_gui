@@ -18,8 +18,8 @@ export default {
 </script>
 
 <template>
-  <div class="row bg-primary mt-1">
-    <span class="col-2">Type Editor</span
+  <div class="row bg-primary rounded p-1" style="color: whitesmoke">
+    <span class="col-3">Type Editor</span
     ><span class="col text-end" v-on:click="toggleEditor()">
       <i class="bi bi-caret-down-fill" title="Show TypeEditor" v-if="editor_hidden"></i>
       <i class="bi bi-caret-up-fill" title="Hide TypeEditor" v-else></i>

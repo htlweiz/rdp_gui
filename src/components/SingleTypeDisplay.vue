@@ -37,12 +37,12 @@ export default {
 <template>
   <div class="row rounded mt-1 mb-0 p-0">
     <input
-      class="col bg-secondary rounded me-1"
+      class="col bg-secondary me-1 mt-1 form-control"
       v-model="edit_type.type_name"
       v-on:change="update_changed"
     />
     <input
-      class="col bg-secondary rounded"
+      class="col bg-secondary me-1 mt-1 form-control"
       v-model="edit_type.type_unit"
       v-on:change="update_changed"
     />
